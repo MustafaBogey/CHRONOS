@@ -1,0 +1,12 @@
+{
+  "$schema": "gen/schemas/desktop-schema.json",
+  "identifier": "mini",
+  "description": "Mini CHRONOS companion window: minimal core permissions (drag, position read, events). All app commands are native and unrestricted; plugin access is not needed.",
+  "windows": ["mini"],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-outer-position",
+    "core:window:allow-is-always-on-top"
+  ]
+}

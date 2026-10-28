@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="CHRONOS logomark">
+  <!-- CHRONOS logomark: a tilted violet-cyan ring around a midnight core,
+       matching the application's conic-gradient brand mark. -->
+  <defs>
+    <linearGradient id="chronos-ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#cf95ff"/>
+      <stop offset="52%" stop-color="#8756f7"/>
+      <stop offset="82%" stop-color="#3cbfdf"/>
+      <stop offset="100%" stop-color="#3cbfdf"/>
+    </linearGradient>
+    <radialGradient id="chronos-core" cx="50%" cy="42%" r="65%">
+      <stop offset="0%" stop-color="#141b30"/>
+      <stop offset="100%" stop-color="#0d1220"/>
+    </radialGradient>
+    <filter id="chronos-glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.2" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g transform="rotate(-20 60 60)" filter="url(#chronos-glow)">
+    <circle cx="60" cy="60" r="46" fill="none" stroke="url(#chronos-ring)" stroke-width="11.5"
+      stroke-linecap="round" stroke-dasharray="230 59" stroke-dashoffset="8"/>
+  </g>
+  <circle cx="60" cy="60" r="37" fill="url(#chronos-core)"/>
+</svg>

@@ -1,0 +1,46 @@
+name: Build CHRONOS (Linux)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Tauri Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libdbus-1-dev libxdo-dev libssl-dev build-essential curl wget file
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Type-check, test, and build the frontend
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Run Rust tests
+        working-directory: src-tauri
+        run: cargo test
+      - name: Build AppImage
+        working-directory: src-tauri
+        run: cargo install tauri-cli --version "^2" && tauri build --bundles appimage
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: chronos-linux
+          path: src-tauri/target/release/bundle/appimage/*.AppImage
+      # On the owner's Arch/Omarchy machine, Hyprland IPC tracking is active whenever the
+      # HYPRLAND_INSTANCE_SIGNATURE environment variable is present at launch.

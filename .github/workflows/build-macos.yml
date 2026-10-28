@@ -1,0 +1,47 @@
+name: Build CHRONOS (macOS)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Type-check, test, and build the frontend
+        run: |
+          npm run typecheck
+          npm test
+          npm run build
+      - name: Run Rust tests
+        working-directory: src-tauri
+        run: cargo test
+      - name: Build CHRONOS.app and DMG (universal)
+        working-directory: src-tauri
+        run: cargo install tauri-cli --version "^2" && tauri build --target universal-apple-darwin
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: chronos-macos
+          path: |
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app
+      # NOTE: the DMG is unsigned unless APPLE_CERTIFICATE secrets are provided.
+      # Distributing outside your own machine requires Developer ID signing + notarization:
+      # https://tauri.app/distribute/sign/macos/

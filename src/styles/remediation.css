@@ -1,0 +1,611 @@
+/* CHRONOS remediation layer — targeted corrections layered after the ported prototype CSS.
+   Each block maps to an acceptance finding; the approved identity is untouched. */
+
+/* 6.1 Themed dropdowns: native selects must never render a light popup on the dark UI. */
+select.field {
+  background-color: #0f1b33;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+select.field option,
+select.field optgroup {
+  background-color: #0f1b33;
+  color: var(--text);
+}
+select.field:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 1px;
+}
+
+/* 6.3 Hero coverage: the panorama reserves a clock column on the right. That reservation
+   exists for the Overview head-clock; on every other page it left an empty dark band.
+   Full bleed everywhere except where the clock actually is. */
+.page-head:before { right: calc(-1 * var(--desktop-gutter)); }
+body[data-page='overview'] .page-head:before { right: calc(var(--hero-clock-col) - var(--desktop-gutter)); }
+
+/* 6.5 Completion notices are visually distinct from reminders. */
+.notification h3 { margin-top: 12px; }
+.notification .notice-complete { border-left: 2px solid var(--green); padding-left: 10px; }
+
+/* ------------------------------------------------------------------ */
+/* UAT remediation layer                                                */
+/* ------------------------------------------------------------------ */
+
+/* Themed scrollbars (Chromium/WebView2): subtle midnight-violet, usable states. */
+html { scrollbar-width: thin; scrollbar-color: #3b4a77 transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: rgba(10, 18, 38, 0.65); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #3d4d7d, #2e3c66);
+  border-radius: 8px;
+  border: 2px solid rgba(10, 18, 38, 0.85);
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, #556899, #41507f); }
+::-webkit-scrollbar-thumb:active { background: linear-gradient(180deg, #9347ff, #7a36e8); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* Overview hero continuity: let the panorama continue behind the clock column and
+   tighten the seam to the metrics row. Scoped to Overview only — other pages keep
+   the full-bleed treatment from the earlier remediation. */
+body[data-page='overview'] .page-head:before { right: calc(-1 * var(--desktop-gutter)); }
+body[data-page='overview'] .page-head { margin-bottom: 10px; }
+body[data-page='overview'] .page-head:after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: calc(-1 * var(--desktop-gutter));
+  right: calc(-1 * var(--desktop-gutter));
+  bottom: -14px;
+  height: 26px;
+  background: linear-gradient(180deg, rgba(6, 13, 28, 0.82), rgba(6, 13, 28, 0));
+  pointer-events: none;
+}
+
+/* Overview clock: integrated glass over the artwork instead of a floating opaque card.
+   Same live content, readable, no hard frame. */
+.head-clock {
+  border: 1px solid rgba(141, 88, 155, 0.24);
+  border-radius: 10px;
+  background: linear-gradient(160deg, rgba(8, 13, 28, 0.66), rgba(10, 16, 34, 0.38));
+  box-shadow: inset 0 1px rgba(217, 187, 255, 0.09);
+}
+.head-clock-time { text-shadow: 0 1px 10px rgba(4, 8, 20, 0.65); }
+.head-clock-date { text-shadow: 0 1px 8px rgba(4, 8, 20, 0.6); }
+
+/* Header controls appear only on Overview (visibility only; the bell stays functional). */
+body:not([data-page='overview']) .top-actions .pill.gray { display: none; }
+body:not([data-page='overview']) .top-actions .icon-btn[aria-label='Notification settings'] { display: none; }
+
+/* ------------------------------------------------------------------ */
+/* Consolidated refinement layer                                        */
+/* ------------------------------------------------------------------ */
+
+/* 3. Today's Focus: no independent artwork — a restrained, dark, semi-transparent
+    treatment that belongs to the unified Overview background. The ring, quote,
+    daily target and target-adjust action keep their prominence (text shadows and
+    ring glow below are untouched). UAT follow-up: the exact same background is
+    shared by Focus Session and Today's Goals for consistency; Today's Activity,
+    Recent Activity, and Weekly Overview keep their current treatment. */
+body .focus-card,
+body .session-card,
+body .goals-card {
+  background:
+    linear-gradient(180deg, rgba(10, 17, 34, 0.66) 0%, rgba(7, 12, 26, 0.84) 100%),
+    radial-gradient(ellipse 70% 26% at 55% 96%, rgba(189, 43, 191, 0.16), transparent 78%);
+  border-color: #a269d7c4;
+}
+body .focus-card::before,
+body .focus-card::after {
+  display: none !important;
+  background-image: none !important;
+}
+
+/* UAT round 2 — Productive Time and Distracting Time share the exact same approved
+   treatment (second metric pair = [Productive, Distracting]); Tracked/Active keep the
+   existing navy metric background. Green/pink icon tiles are untouched. */
+body .metrics-paired .metric-pair:nth-child(2) .metric {
+  background:
+    linear-gradient(180deg, rgba(10, 17, 34, 0.66) 0%, rgba(7, 12, 26, 0.84) 100%),
+    radial-gradient(ellipse 70% 26% at 55% 96%, rgba(189, 43, 191, 0.16), transparent 78%);
+  border-color: #a269d7c4;
+}
+
+/* UAT round 2 — the Overview breadcrumb is redundant beside the active nav item. */
+body[data-page='overview'] .topbar .breadcrumb { display: none; }
+
+/* Overview clock: inline above the greeting — no card, no scrim. */
+.head-clock-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 10px;
+  color: #cfd3ec;
+}
+.head-clock-inline-date { font-size: 13px; letter-spacing: .2px; }
+.head-clock-inline-row { display: flex; align-items: baseline; gap: 10px; }
+.head-clock-inline-time {
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: .5px;
+  color: #f2eeff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  text-shadow: 0 1px 12px rgba(4, 8, 20, 0.7);
+}
+.head-clock-inline-note { font-size: 10px; color: #9aa2c6; }
+@media (min-width: 1700px) {
+  .head-clock-inline-time { font-size: 30px; }
+  .head-clock-inline-date { font-size: 14px; }
+}
+@media (max-width: 940px) {
+  .head-clock-inline-time { font-size: 21px; }
+  .head-clock-inline-date { font-size: 12px; }
+}
+/* The old right-column clock reservation is no longer needed on Overview. */
+.head-clock { display: none; }
+
+/* Overview metrics: two pairs aligned to the two dashboard columns. */
+.metrics.metrics-paired {
+  display: grid;
+  grid-template-columns: minmax(0, 1.03fr) minmax(0, 1fr);
+  gap: 16px;
+}
+.metrics.metrics-paired .metric-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  min-width: 0;
+}
+@media (min-width: 1500px) { .metrics.metrics-paired { gap: 20px; } .metrics.metrics-paired .metric-pair { gap: 20px; } }
+@media (max-width: 1170px) { .metrics.metrics-paired { gap: 14px; } .metrics.metrics-paired .metric-pair { gap: 10px; } }
+@media (max-width: 940px) {
+  /* Icon-rail tier: keep four cards readable in two columns, pairs stacked. */
+  .metrics.metrics-paired { grid-template-columns: 1fr; }
+  .metrics.metrics-paired .metric-pair { gap: 10px; }
+}
+
+/* Sidebar integration: flush with the window, framed by one complete subtle violet
+   border on all four sides (Today's Focus reference, subdued). Square outer corners.
+   Alpha kept just under the Focus-card border (0.77) so the frame reads at the window
+   edge without turning the sidebar into a floating card. */
+.sidebar {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 0;
+  border: 1px solid #a269d7c0;
+  box-shadow: inset 0 1px 0 #a269d742, inset 0 -1px 0 #a269d742, inset 1px 0 0 #a269d742, inset -1px 0 0 #a269d742;
+}
+.shell { gap: 0; }
+
+/* B2. Reduce the sidebar/dashboard gap: pull the dashboard content slightly toward the
+   sidebar (dashboard-side spacing only; sidebar width and position unchanged). */
+.main { margin-left: -10px; }
+@media (max-width: 1170px) { .main { margin-left: -6px; } }
+@media (max-width: 940px) { .main { margin-left: 0; } }
+
+/* C. Today's Activity border matches the Today's Focus pair treatment. */
+.dashboard-grid > .card:nth-child(2) {
+  border-color: #a269d796;
+  box-shadow: inset 0 1px 0 rgba(224, 178, 255, 0.09), 0 8px 30px rgba(62, 27, 103, 0.10);
+}
+
+/* Overview hero balance: lift the date/clock/greeting group ~20px without touching
+   other pages. */
+body[data-page='overview'] .content { padding-top: 18px; }
+@media (max-width: 1500px) { body[data-page='overview'] .content { padding-top: 12px; } }
+
+/* Native dropdown popups: force the dark color scheme so expanded menus match the
+   midnight-violet theme on Windows. */
+select.field { color-scheme: dark; }
+
+/* 4. Adjust your target: moved beneath the Today's Focus heading for contrast;
+   the quote area keeps only the quote. */
+.focus-card .card-head .focus-head-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: #d9c8ff;
+  text-shadow: 0 1px 8px rgba(4, 8, 20, 0.8);
+}
+
+
+
+/* ------------------------------------------------------------------ */
+/* Part D � luminous finish (reference: original concept sketch)       */
+/* Restrained CSS only: gradients/shadows, no animations, no filters.  */
+/* ------------------------------------------------------------------ */
+
+/* Ambient page depth: faint violet atmosphere bands behind the dashboard. */
+body[data-page='overview'] .main {
+  background:
+    radial-gradient(ellipse 480px 300px at 18% 0%, rgba(148, 75, 255, 0.10), transparent 70%),
+    radial-gradient(ellipse 520px 340px at 88% 30%, rgba(38, 150, 220, 0.06), transparent 72%),
+    radial-gradient(ellipse at 75% -4%, rgba(79, 43, 124, 0.10), transparent 42%);
+}
+
+/* Metric cards: luminous violet edge + inner highlight. */
+.metric {
+  border-color: #7e5ec26e;
+  box-shadow: inset 0 1px 0 rgba(224, 178, 255, 0.10), 0 10px 32px rgba(24, 12, 52, 0.35);
+}
+.metric .metric-top > span {
+  filter: drop-shadow(0 0 10px rgba(180, 122, 255, 0.35));
+}
+
+/* Progress ring: stronger glow + luminous track edge. */
+.focus-card .ring .progress {
+  filter: drop-shadow(0 0 14px rgba(187, 90, 255, 0.55));
+}
+.focus-card .ring .track {
+  stroke: #241b44;
+}
+.ring-center strong {
+  text-shadow: 0 0 22px rgba(187, 129, 255, 0.45);
+}
+
+/* Session orbit & quality ring glow. */
+.session-orbit {
+  box-shadow: 0 0 30px rgba(155, 54, 243, 0.18), inset 0 0 23px rgba(126, 61, 194, 0.14);
+}
+.quality-ring circle:last-child {
+  filter: drop-shadow(0 0 8px rgba(0, 229, 177, 0.5));
+}
+
+/* Card depth: uniform gentle lift + hairline top highlight. */
+.card {
+  box-shadow: inset 0 1px 0 rgba(214, 184, 255, 0.07), 0 12px 36px rgba(10, 6, 28, 0.35);
+}
+
+/* Goal bars: luminous leading edge. */
+.goal-row .bar > span {
+  box-shadow: 0 0 12px rgba(180, 122, 255, 0.35);
+}
+
+/* Sidebar active navigation: slightly stronger glow. */
+.nav button.active {
+  box-shadow: 0 0 18px rgba(148, 75, 255, 0.30), inset 0 0 12px rgba(148, 75, 255, 0.12);
+}
+
+/* Quote contrast retained over the dark translucent focus card. */
+.focus-card .focus-copy h3,
+.focus-card .focus-copy p {
+  text-shadow: 0 1px 10px rgba(4, 8, 20, 0.9), 0 0 28px rgba(4, 8, 20, 0.75), 0 0 60px rgba(4, 8, 20, 0.5);
+}
+.focus-card .focus-copy {
+  background: linear-gradient(90deg, rgba(6, 10, 22, 0.18), rgba(6, 10, 22, 0) 70%);
+  padding: 4px 10px 4px 14px;
+  margin: -4px -10px -4px -14px;
+  border-radius: 8px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sidebar motto — approved tagline, one clean line beneath the        */
+/* wordmark. Understated typography and contrast; does not crowd the   */
+/* navigation. Hidden at the icon-rail tier with the rest of the       */
+/* brand text (existing rule).                                         */
+/* ------------------------------------------------------------------ */
+.brand-sub {
+  margin: 12px 10px 30px 18px;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  color: var(--muted);
+}
+@media (max-width: 1170px) {
+  .brand-sub { margin: 10px 9px 24px; font-size: 10.5px; }
+}
+@media (min-width: 2100px) and (min-height: 1150px) {
+  .brand-sub { font-size: 12.5px; margin-left: 20px; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Unified page artwork — "Neon Night Workspace Gradient"              */
+/* One continuous illustration spanning the window from behind the     */
+/* sidebar (window x=0) through the main column's right gutter —       */
+/* one shared coordinate space, one stretch, no copies or seams.       */
+/* The sidebar's own dark panel (z-index above) keeps the art subdued  */
+/* beneath it; the strip it naturally reveals is the image's dark      */
+/* night sky. Applied to every primary page; hidden at the compact     */
+/* tier. The band is height-bounded (see 1.1.3): it never creates     */
+/* artwork-only scrollable height.                                     */
+/* ------------------------------------------------------------------ */
+
+body {
+  /* Vertical distance from the top of .page-head back to the top of .main:
+     topbar height + the content padding lift. */
+  --overview-lift: calc(var(--topbar-h) + 18px);
+  /* Horizontal distance from .page-head's left edge back to the window's left
+     edge: content gutter + the shell's first grid column (sidebar width + 30px)
+     minus .main's small negative left margin. */
+  --art-extend-x: calc(var(--desktop-gutter) + var(--sidebar-w) + 20px);
+}
+@media (max-width: 1500px) {
+  body {
+    --overview-lift: calc(var(--topbar-h) + 12px);
+    --art-extend-x: calc(var(--desktop-gutter) + var(--sidebar-w) + 24px);
+  }
+}
+
+body .page-head:before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: calc(-1 * var(--art-extend-x));
+  right: calc(-1 * var(--desktop-gutter));
+  top: calc(-1 * var(--overview-lift));
+  bottom: auto;
+  /* Bounded band: the illustration keeps its natural scale (background-size
+     100% auto, top-anchored), so the hero region shows the exact same pixels
+     as before — but the box no longer grows with window width. The previous
+     aspect-ratio sizing made the box as tall as window-width / 1.6, and that
+     absolutely-positioned box created a huge scrollable artwork-only region
+     beneath the dashboard. */
+  aspect-ratio: auto;
+  height: calc(var(--overview-lift) + var(--hero-h) + 140px);
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 10, 24, 0.50) 0%, rgba(5, 10, 24, 0.28) 28%, rgba(5, 10, 24, 0) 46%) top center / 100% 100% no-repeat,
+    linear-gradient(0deg, rgba(4, 9, 22, 0.34) 0%, rgba(4, 9, 22, 0) 30%) top center / 100% 100% no-repeat,
+    url('/overview-art.webp') top center / 100% auto no-repeat;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 78%, transparent 99%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 78%, transparent 99%);
+}
+
+/* The old per-page hero art (workspace crop / panorama seam) is superseded
+   everywhere by the continuous band above. */
+body .page-head:after { display: none; }
+
+/* Compact tier: preserve the compact layout; hide the decorative illustration. */
+@media (max-width: 940px) {
+  body .page-head:before { display: none; }
+}
+
+/* Browser connection panel: browser choices, guided steps, honest status. */
+.browser-choices { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 6px; }
+.browser-choice {
+  padding: 8px 14px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: #0e1626;
+  color: var(--muted);
+  font-size: 12px;
+}
+.browser-choice:hover { filter: brightness(1.12); }
+.browser-choice.active {
+  border-color: #a269d7b0;
+  background: linear-gradient(100deg, rgba(116, 57, 206, 0.35), rgba(97, 53, 182, 0.20));
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px #a378f34d;
+}
+.connect-steps { margin: 8px 0 0; padding-left: 20px; line-height: 1.9; font-size: 13px; }
+.connect-steps code { color: #d9c8ff; }
+.integration-status { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.integration-advanced summary { cursor: pointer; list-style: revert; }
+.integration-advanced[open] summary { margin-bottom: 4px; }
+
+/* Recognizable activity icons: offline service marks and native application icons. */
+.app-icon.app-service {
+  background: linear-gradient(125deg, #141c2c, #0d1523);
+  border: 1px solid rgba(163, 120, 243, 0.28);
+  padding: 1px;
+}
+.app-icon.app-native { padding: 2px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(163, 120, 243, 0.22); }
+.app-icon.app-native img { width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 5px; }
+.activity-name small .dot { margin-right: 4px; }
+
+/* Mini CHRONOS — one slim horizontal row in its own frameless window. */
+html.mini, html.mini body { height: 100%; overflow: hidden; }
+html.mini body { background: #0c1424; display: block; }
+html.mini .boot-splash { position: fixed; inset: 0; }
+.mini-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 100vh;
+  padding: 0 8px 0 12px;
+  box-sizing: border-box;
+  background: linear-gradient(125deg, #131b2def, #0c1424f7);
+  border: 1px solid #a269d796;
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(214, 184, 255, 0.10), 0 8px 26px rgba(2, 5, 12, 0.55);
+  user-select: none;
+  cursor: default;
+}
+.mini-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 9px currentColor; }
+.mini-activity {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+  background: none;
+  padding: 6px 2px;
+  text-align: left;
+  overflow: hidden;
+}
+.mini-name {
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 550;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 46%;
+}
+.mini-cat { font-size: 11px; font-weight: 550; white-space: nowrap; }
+.mini-timer { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.mini-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  color: #cfd6ee;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(163, 120, 243, 0.22);
+}
+.mini-btn:hover { background: rgba(163, 120, 243, 0.18); }
+.mini-btn .icon { width: 14px; height: 14px; }
+
+/* Reduced motion: everything here is static; explicit no-op guard. */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* Content that follows the page-head must paint above the artwork band.
+   The band lives inside the page-head's stacking context (position:relative +
+   isolation:isolate) and extends 140px below it; statically-positioned siblings
+   render behind the opaque illustration. Cards already carry position:relative;
+   these shared strips now do too. Settings & Integrations joins the list in
+   1.3.1: its statically-positioned .settings-layout (nav column + section
+   panel) sat under the band, leaving the selected General item illegible
+   until hover (a hover filter promotes the button above the band — the same
+   paint-order mechanism, not a hover-styling bug). */
+.toolbar, .info-strip, .tabs, .settings-layout { position: relative; z-index: 1; }
+
+/* ------------------------------------------------------------------ */
+/* Total Activity (Timeline) — one expandable entry per application    */
+/* ------------------------------------------------------------------ */
+
+.app-aggregate { border-bottom: 1px solid #242c4180; }
+.app-aggregate:last-child { border-bottom: 0; }
+.app-aggregate-row {
+  width: 100%; display: flex; align-items: center; gap: 12px; padding: 15px 2px;
+  background: transparent; border: 0; text-align: left; color: var(--text);
+}
+.app-aggregate-row:hover strong { color: var(--violet); }
+.app-aggregate-time { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; min-width: 110px; }
+.app-aggregate-time strong { font-size: 13px; font-variant-numeric: tabular-nums; }
+.app-aggregate-detail { padding: 0 2px 8px 48px; border-top: 1px dashed #2b3450; }
+
+/* ------------------------------------------------------------------ */
+/* Live activity indicators (Overview "Right now", ongoing rows)       */
+/* ------------------------------------------------------------------ */
+
+.live-now {
+  display: flex; align-items: center; gap: 12px; padding: 13px 2px;
+  border: 1px solid #8261b650; border-radius: 10px; margin: 6px 0 14px;
+  background: radial-gradient(ellipse at 10% 120%, #7846d21a, transparent 70%), #0e1523;
+}
+.live-dot {
+  width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin: 0 4px;
+  background: #4be08f; box-shadow: 0 0 0 0 #4be08f66; animation: live-pulse 2s infinite;
+}
+.live-dot-idle { background: var(--muted); box-shadow: none; animation: none; }
+@keyframes live-pulse {
+  0% { box-shadow: 0 0 0 0 #4be08f55; }
+  70% { box-shadow: 0 0 0 8px #4be08f00; }
+  100% { box-shadow: 0 0 0 0 #4be08f00; }
+}
+.live-elapsed { font-variant-numeric: tabular-nums; color: #a7f3c8; }
+.live-addition { color: #a7f3c8; font-size: 10px; font-variant-numeric: tabular-nums; }
+.timeline-item.live-row { background: #7846d20d; border-radius: 8px; padding-inline: 8px; }
+
+/* Focus Session phase indicators */
+.session-phase-note { margin-top: 10px; font-size: 12px; display: flex; align-items: baseline; gap: 4px; flex-wrap: wrap; justify-content: center; }
+
+/* Focus Session dial (1.3.2): the circular dial shows the phase countdown with
+   a short label beneath it — nothing else lives inside the ring. The intention
+   caption and the detailed phase explanations sit below the dial, so no text
+   can overlap the circular border. The ring, theme, and card layout are
+   unchanged. */
+.session-orbit-col { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.session-orbit-col .session-orbit { flex-shrink: 0; }
+.session-orbit .session-phase-label {
+  font-size: 10px; line-height: 1.35; letter-spacing: .3px; color: #c5c4e7;
+  margin-top: 3px; max-width: 118px; text-align: center;
+}
+.session-orbit-col .session-caption { text-align: center; max-width: 168px; margin-top: 7px; }
+.session-orbit-col .session-phase-note { margin-top: 4px; }
+@media (max-width: 1170px) {
+  .session-orbit .session-phase-label { font-size: 9px; max-width: 96px; }
+  .session-orbit-col .session-caption { max-width: 128px; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Focus Session break statistics + discreet contextual help           */
+/* ------------------------------------------------------------------ */
+
+.break-stats {
+  margin-top: 13px; padding-top: 10px; border-top: 1px dashed #2b3450;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.break-stats p {
+  font-size: 11px; line-height: 1.7; color: var(--muted);
+  display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin: 0;
+}
+.break-stats p strong { color: var(--text); font-size: 12px; }
+
+/* "?" affordance: hover, keyboard focus, or click (toggles); Esc/blu closes. */
+.help-wrap { position: relative; display: inline-flex; margin-left: 3px; vertical-align: baseline; }
+.help-hint {
+  width: 15px; height: 15px; min-width: 15px; padding: 0; border-radius: 50%;
+  display: inline-grid; place-items: center; font-size: 10px; line-height: 1; font-weight: 650;
+  color: #b9a7e8; background: rgba(139, 90, 220, 0.13);
+  border: 1px solid rgba(163, 120, 243, 0.35);
+}
+.help-hint:hover, .help-hint:focus-visible { background: rgba(139, 90, 220, 0.32); color: #efe6ff; outline-offset: 1px; }
+.help-pop {
+  position: absolute; bottom: calc(100% + 9px); left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  width: 228px; padding: 10px 12px; border-radius: 9px;
+  background: #101a30f7; border: 1px solid #8b5adccc;
+  box-shadow: 0 12px 32px rgba(4, 8, 20, 0.6);
+  font-size: 11px; line-height: 1.55; color: #cfd6ee; text-align: left; white-space: normal;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .14s ease, transform .14s ease; z-index: 70;
+}
+.help-pop::after {
+  content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 5px solid transparent; border-top-color: #8b5adccc;
+}
+.help-wrap.below .help-pop { top: calc(100% + 9px); bottom: auto; transform: translateX(-50%) translateY(-3px); }
+.help-wrap.below .help-pop::after { top: auto; bottom: 100%; border-top-color: transparent; border-bottom-color: #8b5adccc; }
+/* Metric-label hints: measured placement prefers the RIGHT of the icon and
+   falls back to below / above / left — whichever keeps the popover fully in
+   the viewport (JS sets top/left and the side; --arrow-x tracks the icon). */
+.help-wrap[data-place] .help-pop { bottom: auto; right: auto; }
+.help-wrap[data-place='right']  .help-pop { transform: translateX(3px); }
+.help-wrap[data-place='left']   .help-pop { transform: translateX(-3px); }
+.help-wrap[data-place='below']  .help-pop { transform: translateY(-3px); }
+.help-wrap[data-place='above']  .help-pop { transform: translateY(3px); }
+.help-wrap[data-place='right'] .help-pop::after {
+  top: 50%; left: -10px; right: auto; bottom: auto; transform: translateY(-50%);
+  border-top-color: transparent; border-bottom-color: transparent; border-right-color: #8b5adccc;
+}
+.help-wrap[data-place='left'] .help-pop::after {
+  top: 50%; left: auto; right: -10px; bottom: auto; transform: translateY(-50%);
+  border-top-color: transparent; border-bottom-color: transparent; border-left-color: #8b5adccc;
+}
+.help-wrap[data-place='below'] .help-pop::after {
+  top: -10px; bottom: auto; left: var(--arrow-x, 50%); right: auto; transform: translateX(-50%);
+  border-top-color: transparent; border-left-color: transparent; border-right-color: transparent; border-bottom-color: #8b5adccc;
+}
+.help-wrap[data-place='above'] .help-pop::after {
+  top: auto; bottom: -10px; left: var(--arrow-x, 50%); right: auto; transform: translateX(-50%);
+  border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; border-top-color: #8b5adccc;
+}
+.help-wrap:hover .help-pop, .help-wrap:focus-within .help-pop, .help-wrap.open .help-pop {
+  opacity: 1; visibility: visible; pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.help-wrap.below:hover .help-pop, .help-wrap.below:focus-within .help-pop, .help-wrap.below.open .help-pop {
+  transform: translateX(-50%) translateY(0);
+}
+.help-wrap[data-place]:hover .help-pop,
+.help-wrap[data-place]:focus-within .help-pop,
+.help-wrap[data-place].open .help-pop {
+  transform: none;
+}
+@media (max-width: 940px) {
+  .help-pop { width: 196px; }
+}
+/* Compact two-column tier: the label column next to the session dial is
+   narrow and near the window's right edge — a slimmer popover keeps the
+   measured placement fully in view without grazing the dial. */
+@media (max-width: 760px) {
+  .help-pop { width: 168px; }
+}

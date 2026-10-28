@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>CHRONOS attribution</title>
+<style>body{font-family:system-ui,sans-serif;max-width:32rem;margin:2rem auto;padding:0 1rem;color:#f3f1ff;background:#080f22}input{width:100%;padding:.5rem;margin:.5rem 0 1rem;background:#101d36;border:1px solid #34476b;color:#f3f1ff;border-radius:6px;box-sizing:border-box}button{padding:.5rem 1rem;background:#9347ff;color:#fff;border:0;border-radius:6px;cursor:pointer;margin-right:.5rem}button.secondary{background:#1b2a4a}p{color:#b1b9d8;line-height:1.5}code{color:#d9c8ff}.ok{color:#09e5ac}</style>
+</head>
+<body>
+  <h1>CHRONOS website attribution</h1>
+  <p>The extension reports <strong>only the domain of the active tab</strong> to the CHRONOS desktop app on this machine (127.0.0.1). No URLs, titles, or page content are ever read or sent, and nothing leaves your computer.</p>
+  <p id="status"></p>
+  <label>Pairing token (manual fallback)<input id="token" type="text" placeholder="normally filled automatically by pairing"></label>
+  <button id="save">Save</button>
+  <button id="pair-auto" class="secondary">Pair automatically</button>
+  <p class="small">“Pair automatically” opens the local CHRONOS pairing page, which stores the token for this extension by itself. You can also pair by opening this page with the token in the address bar (<code>options.html#token=…</code>) — the token is consumed and removed from the URL immediately.</p>
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+# Node / build
+node_modules/
+dist/
+*.local
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/gen/
+
+# Logs and temp
+*.log
+tmp/
+.cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Local app data used during dev runs
+.dev-data/
+
+# Release artifacts (distributed via GitHub Releases, not tracked)
+dist-packages/
+
+# Internal development documents and prototype references (kept locally)
+/CHRONOS-UI-HANDOVER.md
+/CHRONOS-UI-Prototype.html
+/Chronos Cyberpunk Productivity Dashboard*.png
+/Neon Night Workspace Gradient.png
+/Neon Twilight Valleyscape.png
+/docs/DELIVERY-REPORT.md
+/docs/REMEDIATION-REPORT.md
+/docs/FEATURE-MATRIX.md
+/docs/EXTENSION-STORE-READINESS.md
+
+# Local databases / backups / archives must never be committed
+*.db
+*.sqlite
+*.chronosbak
+*.rar
+*.7z
+*.dmp
+

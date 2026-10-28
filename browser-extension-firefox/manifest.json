@@ -1,0 +1,25 @@
+﻿{
+  "manifest_version": 3,
+  "name": "CHRONOS Website Attribution",
+  "version": "1.2.2",
+  "description": "Optional companion for CHRONOS: reports the active tab's domain to your local CHRONOS desktop app, and can block websites you list in CHRONOS distraction blocking. Nothing leaves your machine.",
+  "permissions": ["tabs", "storage", "declarativeNetRequest", "alarms"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "scripts": ["background.js"] },
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1:53711/pair*"],
+      "js": ["pair.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "chronos-attribution@chronos.app",
+      "strict_min_version": "128.0"
+    }
+  },
+  "action": { "default_title": "CHRONOS attribution is active only while the desktop app runs", "default_icon": "icon128.png" },
+  "icons": { "128": "icon128.png" },
+  "options_page": "options.html"
+}
