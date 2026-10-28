@@ -32,7 +32,7 @@ jobs:
         run: cargo test
       - name: Build NSIS installer
         working-directory: src-tauri
-        run: cargo install tauri-cli --version "^2" && tauri build --bundles nsis
+        run: cargo install tauri-cli --version "^2" && cargo tauri build --bundles nsis
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
